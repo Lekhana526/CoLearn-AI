@@ -1,87 +1,76 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const { Pool } = require('pg');
 
-const dbPath = path.resolve(__dirname, 'colearn.sqlite');
-const db = new sqlite3.Database(dbPath);
-
-// Create essential tables
-db.serialize(() => {
-    db.run(`
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            email TEXT UNIQUE NOT NULL,
-            password_hash TEXT NOT NULL,
-            avatar_url TEXT DEFAULT 'https://api.dicebear.com/7.x/shapes/svg?seed=default',
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    `);
-
-    // Ensure avatar_url exists if table was already created
-    db.all("PRAGMA table_info(users)", (err, rows) => {
-        if (rows && !rows.some(r => r.name === 'avatar_url')) {
-            db.run("ALTER TABLE users ADD COLUMN avatar_url TEXT DEFAULT 'https://api.dicebear.com/7.x/shapes/svg?seed=default'");
-        }
-    });
-
-    db.run(`
-        CREATE TABLE IF NOT EXISTS notebooks (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER NOT NULL,
-            title TEXT NOT NULL,
-            content TEXT DEFAULT '',
-            share_token TEXT UNIQUE,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-        )
-    `);
-
-    // Ensure content and share_token exist if table was already created
-    db.all("PRAGMA table_info(notebooks)", (err, rows) => {
-        if (rows && !rows.some(r => r.name === 'content')) {
-            db.run("ALTER TABLE notebooks ADD COLUMN content TEXT DEFAULT ''");
-        }
-        if (rows && !rows.some(r => r.name === 'share_token')) {
-            db.run("ALTER TABLE notebooks ADD COLUMN share_token TEXT");
-        }
-    });
-
-    db.run(`
-        CREATE TABLE IF NOT EXISTS notebook_collaborators (
-            notebook_id INTEGER NOT NULL,
-            user_id INTEGER NOT NULL,
-            joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY (notebook_id, user_id),
-            FOREIGN KEY (notebook_id) REFERENCES notebooks (id) ON DELETE CASCADE,
-            FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-        )
-    `);
-
-    db.run(`
-        CREATE TABLE IF NOT EXISTS notifications (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER NOT NULL,
-            type TEXT DEFAULT 'info',
-            title TEXT NOT NULL,
-            content TEXT,
-            link TEXT,
-            is_read INTEGER DEFAULT 0,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-        )
-    `);
-
-    db.run(`
-        CREATE TABLE IF NOT EXISTS notebook_messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            notebook_id INTEGER NOT NULL,
-            user_id INTEGER NOT NULL,
-            body TEXT NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (notebook_id) REFERENCES notebooks (id) ON DELETE CASCADE,
-            FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-        )
-    `);
+// Setup PostgreSQL pool. 
+// Uses DATABASE_URL from .env when deployed on Render or running locally.
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    // Provide a sensible default fallback for local dev if DATABASE_URL is somehow missing
+    // but typically you should set DATABASE_URL (e.g. postgresql://user:pass@localhost:5432/colearn)
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
-module.exports = db;
+const initializeDB = async () => {
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                name TEXT NOT NULL,
+                email TEXT UNIQUE NOT NULL,
+                password_hash TEXT NOT NULL,
+                avatar_url TEXT DEFAULT 'https://api.dicebear.com/7.x/shapes/svg?seed=default',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS notebooks (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+                title TEXT NOT NULL,
+                content TEXT DEFAULT '',
+                share_token TEXT UNIQUE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS notebook_collaborators (
+                notebook_id INTEGER NOT NULL REFERENCES notebooks (id) ON DELETE CASCADE,
+                user_id INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+                joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (notebook_id, user_id)
+            )
+        `);
+
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS notifications (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                type TEXT DEFAULT 'info',
+                title TEXT NOT NULL,
+                content TEXT,
+                link TEXT,
+                is_read INTEGER DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS notebook_messages (
+                id SERIAL PRIMARY KEY,
+                notebook_id INTEGER NOT NULL REFERENCES notebooks (id) ON DELETE CASCADE,
+                user_id INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+                body TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+        
+        console.log("PostgreSQL Database initialized successfully.");
+    } catch (err) {
+        console.error("Failed to initialize database:", err);
+    }
+};
+
+initializeDB();
+
+module.exports = pool;

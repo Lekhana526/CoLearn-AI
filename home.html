@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="styles.css"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="tailwind.config.js"></script>
+    <script src="config.js"></script>
 </head>
 <body class="flex flex-col min-h-screen bg-surface text-on-surface">
 
@@ -228,7 +229,7 @@
                     `;
                 }
 
-                const url = query ? `/api/notebooks?q=${encodeURIComponent(query)}` : '/api/notebooks';
+                const url = query ? `${API_BASE_URL}/api/notebooks?q=${encodeURIComponent(query)}` : `${API_BASE_URL}/api/notebooks`;
                 const response = await fetch(url, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -336,7 +337,7 @@
             if (!confirm(`Are you sure you want to ${action}?`)) return;
 
             try {
-                const res = await fetch(`/api/notebooks/${id}`, {
+                const res = await fetch(`${API_BASE_URL}/api/notebooks/${id}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -366,7 +367,7 @@
             btn.innerHTML = `<span class="animate-spin material-symbols-outlined text-[20px]">sync</span>`;
 
             try {
-                const response = await fetch('/api/notebooks', {
+                const response = await fetch(`${API_BASE_URL}/api/notebooks`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -432,7 +433,7 @@
             btnConfirmDelete.innerHTML = `<span class="animate-spin material-symbols-outlined text-[20px]">sync</span>`;
 
             try {
-                const response = await fetch('/api/user/profile', {
+                const response = await fetch(`${API_BASE_URL}/api/user/profile`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -501,7 +502,7 @@
             btnSaveAvatar.innerHTML = `<span class="animate-spin material-symbols-outlined text-[18px]">sync</span>`;
             
             try {
-                const response = await fetch('/api/user/profile', {
+                const response = await fetch(`${API_BASE_URL}/api/user/profile`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
@@ -532,7 +533,7 @@
 
         async function fetchUserProfile() {
             try {
-                const response = await fetch('/api/user/profile', {
+                const response = await fetch(`${API_BASE_URL}/api/user/profile`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!response.ok) throw new Error('Failed to fetch profile');
@@ -577,7 +578,7 @@
 
         async function fetchNotifications() {
             try {
-                const response = await fetch('/api/notifications', {
+                const response = await fetch(`${API_BASE_URL}/api/notifications`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!response.ok) throw new Error('Failed to fetch notifications');
@@ -635,7 +636,7 @@
 
         async function markAllNotificationsRead() {
             try {
-                await fetch('/api/notifications/read-all', {
+                await fetch(`${API_BASE_URL}/api/notifications/read-all`, {
                     method: 'PATCH',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });

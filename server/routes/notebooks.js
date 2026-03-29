@@ -5,32 +5,32 @@ const crypto = require('crypto');
 
 const router = express.Router();
 
-// Helper to interact with sqlite async
-const runAsync = (sql, params = []) => {
-    return new Promise((resolve, reject) => {
-        db.run(sql, params, function (err) {
-            if (err) reject(err);
-            else resolve(this);
-        });
-    });
+// PostgreSQL Adapter Helpers
+const runAsync = async (sql, params = []) => {
+    let i = 1;
+    const pgSql = sql.replace(/\?/g, () => `$${i++}`);
+    const isInsert = pgSql.trim().toUpperCase().startsWith('INSERT');
+    const finalSql = isInsert ? `${pgSql} RETURNING id` : pgSql;
+
+    const res = await db.query(finalSql, params);
+    return {
+        lastID: isInsert && res.rows.length > 0 ? res.rows[0].id : null,
+        changes: res.rowCount
+    };
 };
 
-const allAsync = (sql, params = []) => {
-    return new Promise((resolve, reject) => {
-        db.all(sql, params, (err, rows) => {
-            if (err) reject(err);
-            else resolve(rows);
-        });
-    });
+const allAsync = async (sql, params = []) => {
+    let i = 1;
+    const pgSql = sql.replace(/\?/g, () => `$${i++}`);
+    const res = await db.query(pgSql, params);
+    return res.rows;
 };
 
-const getAsync = (sql, params = []) => {
-    return new Promise((resolve, reject) => {
-        db.get(sql, params, (err, row) => {
-            if (err) reject(err);
-            else resolve(row);
-        });
-    });
+const getAsync = async (sql, params = []) => {
+    let i = 1;
+    const pgSql = sql.replace(/\?/g, () => `$${i++}`);
+    const res = await db.query(pgSql, params);
+    return res.rows[0];
 };
 
 // ── GET ALL NOTEBOOKS ──
@@ -189,7 +189,7 @@ router.post('/join/link', verifyToken, async (req, res) => {
         }
 
         await runAsync(
-            'INSERT OR IGNORE INTO notebook_collaborators (notebook_id, user_id) VALUES (?, ?)',
+            'INSERT INTO notebook_collaborators (notebook_id, user_id) VALUES (?, ?) ON CONFLICT DO NOTHING',
             [notebook.id, req.user.id]
         );
 

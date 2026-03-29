@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="styles.css"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="tailwind.config.js"></script>
+    <script src="config.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- PDF.js for text extraction -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
@@ -303,7 +304,7 @@
         
         async function loadNotebook() {
             try {
-                const res = await fetch(`/api/notebooks/${notebookId}`, {
+                const res = await fetch(`${API_BASE_URL}/api/notebooks/${notebookId}`, {
                     headers: { 'Authorization': `Bearer ${tokenStr}` }
                 });
                 if (!res.ok) throw new Error('Failed to load');
@@ -327,7 +328,7 @@
             clearTimeout(saveTimeout);
             saveTimeout = setTimeout(async () => {
                 try {
-                    await fetch(`/api/notebooks/${notebookId}`, {
+                    await fetch(`${API_BASE_URL}/api/notebooks/${notebookId}`, {
                         method: 'PUT',
                         headers: { 
                             'Content-Type': 'application/json',
@@ -411,7 +412,7 @@
 
                 const notes = document.getElementById('notes-area')?.value || '';
 
-                fetch('/api/ai/chat', {
+                fetch(`${API_BASE_URL}/api/ai/chat`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -649,7 +650,7 @@
             btn.innerHTML = '<span class="animate-spin material-symbols-outlined text-[16px]">sync</span> Sending...';
 
             try {
-                const res = await fetch(`/api/notebooks/${notebookId}/invite`, {
+                const res = await fetch(`${API_BASE_URL}/api/notebooks/${notebookId}/invite`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${tokenStr}` },
                     body: JSON.stringify({ email })
@@ -681,7 +682,7 @@
             const originalHtml = btn.innerHTML;
             btn.innerHTML = '<span class="animate-spin material-symbols-outlined text-[16px]">sync</span> Generating...';
             try {
-                const res = await fetch(`/api/notebooks/${notebookId}/share`, {
+                const res = await fetch(`${API_BASE_URL}/api/notebooks/${notebookId}/share`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${tokenStr}` }
                 });
@@ -776,7 +777,7 @@
 
         async function loadStudyMessages() {
             try {
-                const r = await fetch(`/api/notebooks/${notebookId}/messages`, {
+                const r = await fetch(`${API_BASE_URL}/api/notebooks/${notebookId}/messages`, {
                     headers: { Authorization: `Bearer ${tokenStr}` },
                 });
                 if (!r.ok) return;
@@ -790,7 +791,7 @@
             if (!text) return;
             friendsInput.value = '';
             try {
-                const r = await fetch(`/api/notebooks/${notebookId}/messages`, {
+                const r = await fetch(`${API_BASE_URL}/api/notebooks/${notebookId}/messages`, {
                     method: 'POST',
                     headers: authHeaders,
                     body: JSON.stringify({ body: text }),

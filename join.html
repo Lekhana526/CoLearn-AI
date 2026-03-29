@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="tailwind.config.js"></script>
+    <script src="config.js"></script>
     <style>
         body { font-family: 'Manrope', sans-serif; }
     </style>
@@ -56,7 +57,7 @@
             }
 
             try {
-                const res = await fetch('/api/notebooks/join/link', {
+                const res = await fetch(`${API_BASE_URL}/api/notebooks/join/link`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

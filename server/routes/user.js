@@ -4,23 +4,25 @@ const { verifyToken } = require('../auth');
 
 const router = express.Router();
 
-// Helper to interact with sqlite async
-const runAsync = (sql, params = []) => {
-    return new Promise((resolve, reject) => {
-        db.run(sql, params, function (err) {
-            if (err) reject(err);
-            else resolve(this);
-        });
-    });
+// PostgreSQL Adapter Helpers
+const runAsync = async (sql, params = []) => {
+    let i = 1;
+    const pgSql = sql.replace(/\?/g, () => `$${i++}`);
+    const isInsert = pgSql.trim().toUpperCase().startsWith('INSERT');
+    const finalSql = isInsert ? `${pgSql} RETURNING id` : pgSql;
+
+    const res = await db.query(finalSql, params);
+    return {
+        lastID: isInsert && res.rows.length > 0 ? res.rows[0].id : null,
+        changes: res.rowCount
+    };
 };
 
-const getAsync = (sql, params = []) => {
-    return new Promise((resolve, reject) => {
-        db.get(sql, params, (err, row) => {
-            if (err) reject(err);
-            else resolve(row);
-        });
-    });
+const getAsync = async (sql, params = []) => {
+    let i = 1;
+    const pgSql = sql.replace(/\?/g, () => `$${i++}`);
+    const res = await db.query(pgSql, params);
+    return res.rows[0];
 };
 
 // ── GET PROFILE ──
