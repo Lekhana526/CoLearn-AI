@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta name="description" content="Log in to CoLearn AI — your collaborative intelligence network for knowledge curation."/>
+    <title>Login | CoLearn AI</title>
+
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <!-- Shared Styles -->
+    <link rel="stylesheet" href="styles.css"/>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="tailwind.config.js"></script>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-container">
+
+    <!-- Hero Background Layer -->
+    <div class="fixed inset-0 z-0">
+        <img
+            alt="A cinematic, low-light view of a modern library with dark wood shelves, floating glowing digital particles, and deep blue atmospheric lighting"
+            class="w-full h-full object-cover"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgsxm6fXt3B-xn4fKhnzlKjmnL24MTp_nMS17mTmPSMA0XeLegCe_Ay36X8roxeJTfif_OGof6YDvt7GKe-Q4ctjOcdBdwCiaz_EeUPxRj45xzJiCSBusTcFTV5C9JCLavl3YYYZIaGNxSeWG-fw2BvxmjCN_nxCV3F8sc3u54V-elgZ_aZoJ-ERM0hOdcD--xX3ZeJ5pzHgK4BUSoxrlk26XoSSrvXNAQxetUeDZMX85ATTz0uwY7xEgeULOGk1irZ-b8HNYdyfHH"
+        />
+        <div class="absolute inset-0 bg-gradient-to-b from-surface/90 via-surface/70 to-surface"></div>
+    </div>
+
+    <!-- Main -->
+    <main class="relative z-10 flex-grow flex items-center justify-center px-6 py-20">
+        <div class="w-full max-w-[480px]">
+
+            <!-- Brand Anchor -->
+            <div class="text-center mb-10">
+                <div class="inline-flex items-center justify-center mb-8 mx-auto w-24 h-24 bg-white rounded-3xl shadow-2xl p-2 overflow-hidden">
+                    <img src="logo.jpeg" alt="CoLearn AI Logo" class="w-full h-full object-contain"/>
+                </div>
+                <h1 class="text-3xl font-extrabold tracking-tighter text-on-surface mb-2">CoLearn AI</h1>
+                <p class="text-on-surface-variant font-medium tracking-wide text-sm uppercase">The Digital Curator</p>
+            </div>
+
+            <!-- Login Card -->
+            <div class="glass-panel p-10 rounded-xl shadow-[0px_20px_40px_rgba(0,0,0,0.6)] border border-outline-variant/10 space-y-8">
+                
+                <!-- Auth Toggle -->
+                <div class="flex p-1 bg-surface-container-lowest rounded-lg border border-outline-variant/10">
+                    <button id="tab-login" class="flex-1 py-2 text-sm font-bold rounded-md bg-surface-container-highest text-primary shadow-sm transition-all">Login</button>
+                    <button id="tab-register" class="flex-1 py-2 text-sm font-bold rounded-md text-outline hover:text-on-surface transition-all">Register</button>
+                </div>
+
+                <form id="auth-form" class="space-y-6" novalidate>
+
+                    <!-- Name (Hidden for Login by default) -->
+                    <div id="name-group" class="space-y-2 hidden">
+                        <label for="auth-name" class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">
+                            Full Name
+                        </label>
+                        <div class="relative group">
+                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors select-none pointer-events-none">person</span>
+                            <input
+                                id="auth-name"
+                                name="name"
+                                type="text"
+                                autocomplete="name"
+                                placeholder="Display Name"
+                                class="w-full bg-surface-container-lowest border-none rounded-lg py-4 pl-12 pr-4 text-on-surface placeholder:text-outline/50 focus:ring-2 focus:ring-primary/20 transition-all"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="space-y-2">
+                        <label for="login-email" class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">
+                            Email Address
+                        </label>
+                        <div class="relative group">
+                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors select-none pointer-events-none">mail</span>
+                            <input
+                                id="auth-email"
+                                name="email"
+                                type="email"
+                                autocomplete="email"
+                                required
+                                placeholder="curator@athenaeum.ai"
+                                class="w-full bg-surface-container-lowest border-none rounded-lg py-4 pl-12 pr-4 text-on-surface placeholder:text-outline/50 focus:ring-2 focus:ring-primary/20 transition-all"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center ml-1">
+                            <label for="login-password" class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant">
+                                Password
+                            </label>
+                            <a href="#" class="text-xs font-semibold text-primary hover:text-primary-container transition-colors">
+                                Forgot Password?
+                            </a>
+                        </div>
+                        <div class="relative group">
+                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors select-none pointer-events-none">lock</span>
+                            <input
+                                id="auth-password"
+                                name="password"
+                                type="password"
+                                autocomplete="current-password"
+                                required
+                                placeholder="••••••••"
+                                class="w-full bg-surface-container-lowest border-none rounded-lg py-4 pl-12 pr-12 text-on-surface placeholder:text-outline/50 focus:ring-2 focus:ring-primary/20 transition-all"
+                            />
+                            <button
+                                id="toggle-password"
+                                type="button"
+                                aria-label="Toggle password visibility"
+                                class="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors focus:outline-none"
+                            >
+                                <span id="toggle-icon" class="material-symbols-outlined">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Error message (hidden by default) -->
+                    <p id="auth-error" class="hidden text-sm text-error font-medium text-center rounded-lg bg-error-container/20 py-2 px-4"></p>
+
+                    <!-- Submit -->
+                    <button
+                        id="auth-btn"
+                        type="submit"
+                        class="w-full primary-gradient text-on-primary font-bold py-4 rounded-lg shadow-lg hover:shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all"
+                    >
+                        Login to CoLearn
+                    </button>
+                </form>
+
+                <!-- Footer Link -->
+                <div class="text-center transition-all" id="auth-footer">
+                    <p class="text-sm text-on-surface-variant">
+                        New to CoLearn?
+                        <button id="btn-switch-register" type="button" class="text-primary font-bold hover:underline ml-1">Create an Account</button>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Security Note -->
+            <p class="text-center text-outline/40 text-[10px] uppercase tracking-widest mt-8">
+                🔒 Secured with end-to-end encryption
+            </p>
+        </div>
+    </main>
+
+    <!-- Ambient Glow -->
+    <div class="fixed top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full -z-10 pointer-events-none"></div>
+    <div class="fixed bottom-[-5%] left-[-5%] w-[400px] h-[400px] bg-tertiary/5 blur-[100px] rounded-full -z-10 pointer-events-none"></div>
+
+    <script>
+        // --- UI Toggles ---
+        let isLogin = true;
+
+        const tabLogin = document.getElementById('tab-login');
+        const tabRegister = document.getElementById('tab-register');
+        const nameGroup = document.getElementById('name-group');
+        const authBtn = document.getElementById('auth-btn');
+        const authFooter = document.getElementById('auth-footer');
+        const btnSwitchReg = document.getElementById('btn-switch-register');
+
+        function setMode(mode) {
+            isLogin = mode === 'login';
+            errorMsg.classList.add('hidden');
+            
+            if (isLogin) {
+                tabLogin.className = "flex-1 py-2 text-sm font-bold rounded-md bg-surface-container-highest text-primary shadow-sm transition-all";
+                tabRegister.className = "flex-1 py-2 text-sm font-bold rounded-md text-outline hover:text-on-surface transition-all";
+                nameGroup.classList.add('hidden');
+                document.getElementById('auth-name').required = false;
+                authBtn.textContent = 'Login to CoLearn';
+                authFooter.innerHTML = '<p class="text-sm text-on-surface-variant">New to CoLearn? <button id="btn-switch-register" type="button" class="text-primary font-bold hover:underline ml-1">Create an Account</button></p>';
+                document.getElementById('btn-switch-register').addEventListener('click', () => setMode('register'));
+            } else {
+                tabRegister.className = "flex-1 py-2 text-sm font-bold rounded-md bg-surface-container-highest text-primary shadow-sm transition-all";
+                tabLogin.className = "flex-1 py-2 text-sm font-bold rounded-md text-outline hover:text-on-surface transition-all";
+                nameGroup.classList.remove('hidden');
+                document.getElementById('auth-name').required = true;
+                authBtn.textContent = 'Create Account';
+                authFooter.innerHTML = '<p class="text-sm text-on-surface-variant">Already have an account? <button id="btn-switch-login" type="button" class="text-primary font-bold hover:underline ml-1">Sign In</button></p>';
+                document.getElementById('btn-switch-login').addEventListener('click', () => setMode('login'));
+            }
+        }
+
+        tabLogin.addEventListener('click', () => setMode('login'));
+        tabRegister.addEventListener('click', () => setMode('register'));
+        if(btnSwitchReg) btnSwitchReg.addEventListener('click', () => setMode('register'));
+
+        // --- Password Visibility Toggle ---
+        const toggleBtn = document.getElementById('toggle-password');
+        const passwordInput = document.getElementById('auth-password');
+        const toggleIcon = document.getElementById('toggle-icon');
+
+        toggleBtn.addEventListener('click', () => {
+            const isHidden = passwordInput.type === 'password';
+            passwordInput.type = isHidden ? 'text' : 'password';
+            toggleIcon.textContent = isHidden ? 'visibility_off' : 'visibility';
+        });
+
+        // --- Form Auth Logic (Express backend) ---
+        const form = document.getElementById('auth-form');
+        const errorMsg = document.getElementById('auth-error');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+            const name = document.getElementById('auth-name').value.trim();
+
+            if (!email || !password || (!isLogin && !name)) {
+                errorMsg.textContent = 'Please fill out all required fields.';
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+
+            errorMsg.classList.add('hidden');
+            const originalText = authBtn.textContent;
+            authBtn.textContent = isLogin ? 'Logging in…' : 'Creating account…';
+            authBtn.disabled = true;
+
+            const endpoint = isLogin ? '/api/login' : '/api/register';
+            const payload = isLogin ? { email, password } : { name, email, password };
+
+            try {
+                // IMPORTANT: since frontend hits the backend from the same port during local testing, default path works
+                const res = await fetch(`http://localhost:3000${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    errorMsg.textContent = data.error || 'Authentication failed';
+                    errorMsg.classList.remove('hidden');
+                    authBtn.textContent = originalText;
+                    authBtn.disabled = false;
+                    return;
+                }
+
+                // Success
+                localStorage.setItem('colearn_token', data.token);
+                authBtn.textContent = '✓ Welcome!';
+                
+                setTimeout(() => {
+                    window.location.href = 'home.html';
+                }, 800);
+
+            } catch (err) {
+                errorMsg.textContent = 'Failed to connect to the server. Is the backend running?';
+                errorMsg.classList.remove('hidden');
+                authBtn.textContent = originalText;
+                authBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

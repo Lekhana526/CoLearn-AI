@@ -1,0 +1,14 @@
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}
+body {
+    background-color: #0b1326;
+    font-family: 'Manrope', sans-serif;
+}
+.glass-panel {
+    background: rgba(19, 27, 46, 0.8);
+    backdrop-filter: blur(24px);
+}
+.primary-gradient {
+    background: linear-gradient(135deg, #adc6ff 0%, #4d8eff 100%);
+}

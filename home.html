@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta name="description" content="CoLearn AI Home — Create notebooks and collaborate with peers."/>
+    <title>CoLearn AI - Home</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="styles.css"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="tailwind.config.js"></script>
+</head>
+<body class="flex flex-col min-h-screen bg-surface text-on-surface">
+
+    <!-- ── Navbar ── -->
+    <header class="flex items-center justify-between w-full px-8 py-4 sticky top-0 z-50 bg-[#0b1326]/80 backdrop-blur-xl border-b border-outline-variant/10">
+        <a href="home.html" class="flex items-center gap-3 hover:opacity-80 transition-opacity group">
+            <div class="h-9 w-9 bg-white rounded-xl shadow-[0_4px_20px_rgba(255,255,255,0.1)] flex items-center justify-center p-1.5 overflow-hidden transition-transform group-hover:scale-105 duration-300">
+                 <img src="logo.jpeg" alt="Logo" class="w-full h-full object-contain"/>
+            </div>
+            <span class="text-xl font-bold tracking-tighter text-primary">CoLearn AI</span>
+        </a>
+        <div class="flex items-center gap-6">
+            <div class="flex items-center bg-surface-container-low px-4 py-2 rounded-lg w-64 border border-outline-variant/10">
+                <span class="material-symbols-outlined text-outline mr-2 text-[20px] select-none pointer-events-none">search</span>
+                <input id="global-search" type="text" placeholder="Search notebooks..." class="bg-transparent border-none text-sm focus:ring-0 text-on-surface placeholder:text-outline-variant w-full"/>
+            </div>
+            <!-- Notifications -->
+            <div class="relative">
+                <button id="btn-notifications" class="relative p-2 text-outline hover:text-primary transition-colors focus:outline-none group">
+                    <span class="material-symbols-outlined text-[24px]">notifications</span>
+                    <span id="notification-badge" class="absolute top-2 right-2.5 w-2 h-2 bg-error rounded-full border-2 border-[#0b1326] hidden"></span>
+                </button>
+
+                <!-- Notifications Dropdown -->
+                <div id="notifications-dropdown" class="absolute right-0 mt-2 w-80 bg-surface-container-high border border-outline-variant/20 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.5)] hidden flex flex-col overflow-hidden z-[60] origin-top-right transition-all">
+                    <div class="p-4 border-b border-outline-variant/10 flex items-center justify-between">
+                        <h3 class="font-bold text-on-surface">Notifications</h3>
+                        <span id="unread-count" class="text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary font-bold hidden">0 New</span>
+                    </div>
+                    <div id="notifications-list" class="max-h-96 overflow-y-auto py-2">
+                        <!-- Notifications injected here -->
+                    </div>
+                    <div class="p-3 border-t border-outline-variant/10 text-center">
+                        <button onclick="markAllNotificationsRead()" class="text-xs font-bold text-primary hover:text-primary-container transition-colors">Mark all as read</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Profile Avatar with Dropdown -->
+            <div class="relative">
+                <div class="flex items-center gap-3">
+                    <span id="user-name" class="text-sm font-bold text-on-surface-variant hidden sm:inline-block tracking-tight opacity-80"></span>
+                    <button id="btn-profile" aria-label="Profile" class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant/20 active:scale-95 transition-transform flex-shrink-0 relative z-10">
+                        <img alt="User avatar" class="w-full h-full object-cover pointer-events-none" src="https://api.dicebear.com/7.x/shapes/svg?seed=default"/>
+                    </button>
+                </div>
+
+                <!-- Dropdown Menu -->
+                <div id="profile-dropdown" class="absolute right-0 mt-2 w-52 bg-surface-container-high border border-outline-variant/20 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.4)] hidden flex flex-col overflow-hidden z-50 origin-top-right transition-all">
+                    <button onclick="openAvatarModal()" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-on-surface hover:bg-surface-container-highest transition-colors w-full text-left">
+                        <span class="material-symbols-outlined text-[20px]">account_circle</span>
+                        Change icon
+                    </button>
+                    <button class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-on-surface hover:bg-surface-container-highest transition-colors w-full text-left border-t border-outline-variant/5">
+                        <span class="material-symbols-outlined text-[20px]">settings</span>
+                        Settings
+                    </button>
+                    <button id="btn-logout" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-on-surface hover:bg-surface-container-highest transition-colors w-full text-left border-t border-outline-variant/5">
+                        <span class="material-symbols-outlined text-[20px]">logout</span>
+                        Log out
+                    </button>
+                    <button onclick="openDeleteModal()" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-error hover:bg-error-container/20 transition-colors w-full text-left border-t border-error/10 bg-error/5">
+                        <span class="material-symbols-outlined text-[20px]">delete_forever</span>
+                        Delete account
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ── Main ── -->
+    <main class="flex-1 bg-surface-dim">
+        <div class="p-10 max-w-6xl mx-auto space-y-12">
+
+            <!-- ── My Notebooks (Highlighted & On Top) ── -->
+            <section aria-labelledby="notebooks-heading">
+                <div class="flex items-center justify-between mb-8">
+                    <h2 id="notebooks-heading" class="text-3xl font-extrabold text-on-surface tracking-tight">My Notebooks</h2>
+                    <span class="text-sm text-primary font-semibold uppercase tracking-wider bg-primary/10 px-3 py-1 rounded-full" id="nb-count">3 Active</span>
+                </div>
+
+                <div id="notebooks-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Dynamic Content -->
+                    <div class="col-span-full py-12 flex justify-center">
+                        <div class="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                    </div>
+                </div>
+
+                <!-- ── Create Notebook (+ Button below grid RHS) ── -->
+                <div class="mt-12 flex justify-end w-full">
+                    <div class="relative inline-block text-right flex-col items-end">
+                        <!-- Dropdown (pops up above the button) -->
+                        <div id="create-dropdown" class="absolute bottom-[calc(100%+16px)] right-0 w-[340px] bg-surface-container border border-outline-variant/20 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.6)] hidden flex-col p-6 z-20 transition-all origin-bottom-right text-left">
+                            <h3 class="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-4">Create New Notebook</h3>
+                            <input id="nb-title" type="text" placeholder="Notebook title..." class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-xl py-3.5 px-4 text-on-surface text-sm placeholder:text-outline/40 focus:ring-1 focus:ring-primary focus:border-primary transition-all mb-4"/>
+                            <button id="btn-create-nb" class="w-full py-3.5 primary-gradient text-on-primary font-bold rounded-xl shadow-lg shadow-primary/20 hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-[20px]">add</span>
+                                Create Notebook
+                            </button>
+                            <p id="nb-error" class="hidden text-xs text-error font-medium mt-3 text-center">Please enter a title.</p>
+                        </div>
+
+                        <!-- Button -->
+                        <button id="btn-open-create" class="w-14 h-14 primary-gradient text-on-primary rounded-full shadow-[0_8px_30px_rgba(173,198,255,0.3)] hover:brightness-110 hover:scale-105 active:scale-95 transition-all flex items-center justify-center relative z-10 ml-auto" aria-label="Create Notebook">
+                            <span class="material-symbols-outlined text-[32px] pointer-events-none">add</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+
+
+        </div>
+    </main>
+
+    <!-- ── Avatar Picker Modal ── -->
+    <div id="avatar-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-[#0b1326]/60 backdrop-blur-md" onclick="closeAvatarModal()"></div>
+        <div class="relative w-full max-w-md bg-surface-container rounded-3xl border border-outline-variant/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden">
+            <div class="p-8">
+                <div class="flex items-center justify-between mb-8">
+                    <h2 class="text-2xl font-bold text-on-surface">Choose Avatar</h2>
+                    <button onclick="closeAvatarModal()" class="p-2 hover:bg-surface-container-high rounded-full transition-colors text-outline">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                
+                <div id="avatar-grid" class="grid grid-cols-3 gap-6 max-h-[400px] overflow-y-auto p-1">
+                    <!-- Avatars will be injected here -->
+                </div>
+            </div>
+            <div class="p-8 bg-surface-container-high/50 border-t border-outline-variant/10 flex justify-end gap-3">
+                <button onclick="closeAvatarModal()" class="px-6 py-2.5 rounded-xl text-sm font-bold text-on-surface hover:bg-surface-container-highest transition-colors">Cancel</button>
+                <button id="btn-save-avatar" disabled class="px-6 py-2.5 primary-gradient text-on-primary rounded-xl text-sm font-bold shadow-lg shadow-primary/20 disabled:opacity-50 transition-all">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Delete Account Modal ── -->
+    <div id="delete-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
+        <div class="relative w-full max-w-md bg-surface-container rounded-3xl border border-error/20 shadow-[0_20px_50px_rgba(255,0,0,0.2)] overflow-hidden">
+            <div class="p-8 text-center">
+                <div class="w-20 h-20 bg-error/10 text-error rounded-full flex items-center justify-center mx-auto mb-6">
+                    <span class="material-symbols-outlined text-[48px]">warning</span>
+                </div>
+                <h2 class="text-2xl font-bold text-on-surface mb-3">Delete Account?</h2>
+                <p class="text-on-surface-variant text-sm leading-relaxed mb-8">
+                    This action is <span class="text-error font-bold">permanent</span>. All your notebooks and data will be erased forever. Are you sure?
+                </p>
+                
+                <div class="flex flex-col gap-3">
+                    <button id="btn-confirm-delete" class="w-full py-3.5 bg-error text-on-error font-bold rounded-xl hover:brightness-110 active:scale-[0.98] transition-all shadow-lg shadow-error/20">
+                        Yes, Delete Everything
+                    </button>
+                    <button onclick="closeDeleteModal()" class="w-full py-3.5 text-on-surface-variant font-medium hover:bg-surface-container-high rounded-xl transition-all">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ── Auth Guard ──
+        const token = localStorage.getItem('colearn_token');
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        // ── Create Notebook & Dropdown ──
+        const btnOpenCreate = document.getElementById('btn-open-create');
+        const createDropdown = document.getElementById('create-dropdown');
+        const inputNbTitle = document.getElementById('nb-title');
+
+        if (btnOpenCreate && createDropdown) {
+            btnOpenCreate.addEventListener('click', (e) => {
+                e.stopPropagation();
+                createDropdown.classList.toggle('hidden');
+                createDropdown.classList.toggle('flex');
+                if (!createDropdown.classList.contains('hidden')) {
+                    setTimeout(() => inputNbTitle.focus(), 50);
+                }
+            });
+            document.addEventListener('click', (e) => {
+                if (!createDropdown.contains(e.target)) {
+                    createDropdown.classList.add('hidden');
+                    createDropdown.classList.remove('flex');
+                }
+            });
+        }
+
+        // ── Search Logic ──
+        const searchInput = document.getElementById('global-search');
+        let searchTimeout;
+
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.trim();
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    fetchNotebooks(query);
+                }, 300);
+            });
+        }
+
+        async function fetchNotebooks(query = '') {
+            try {
+                // Show loading state in grid
+                if (query) {
+                    const grid = document.getElementById('notebooks-grid');
+                    grid.innerHTML = `
+                        <div class="col-span-full py-12 flex justify-center">
+                            <div class="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                        </div>
+                    `;
+                }
+
+                const url = query ? `/api/notebooks?q=${encodeURIComponent(query)}` : '/api/notebooks';
+                const response = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Failed to fetch');
+                const notebooks = await response.json();
+                renderNotebooks(notebooks, query);
+            } catch (err) {
+                console.error(err);
+                document.getElementById('notebooks-grid').innerHTML = `
+                    <div class="col-span-full py-20 text-center">
+                        <p class="text-error font-medium">Failed to load notebooks. Please refresh.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderNotebooks(notebooks, query = '') {
+            const grid = document.getElementById('notebooks-grid');
+            const count = document.getElementById('nb-count');
+            
+            count.textContent = query ? `${notebooks.length} Found` : `${notebooks.length} Active`;
+            
+            if (notebooks.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-20 text-center">
+                        <span class="material-symbols-outlined text-outline/20 text-[64px] mb-4">search_off</span>
+                        <p class="text-on-surface-variant font-medium">${query ? 'No matches found.' : 'No notebooks yet. Create your first one below!'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = notebooks.map((nb, i) => {
+                const date = new Date(nb.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+                const themes = nb.is_owner ? [
+                    { border: 'border-primary/40', bg: 'bg-primary/20', text: 'text-primary', hover: 'hover:shadow-primary/20' },
+                    { border: 'border-secondary/40', bg: 'bg-secondary/20', text: 'text-secondary', hover: 'hover:shadow-secondary/20' }
+                ] : [
+                    { border: 'border-tertiary/40', bg: 'bg-tertiary/20', text: 'text-tertiary', hover: 'hover:shadow-tertiary/20' }
+                ];
+                const t = themes[i % themes.length];
+                
+                // Highlight logic
+                let titleHtml = nb.title;
+                if (query) {
+                    const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                    titleHtml = nb.title.replace(regex, '<mark class="bg-primary/30 text-primary rounded-sm px-0.5">$1</mark>');
+                }
+
+                const selectionClass = (query && i === 0) ? 'ring-2 ring-primary ring-offset-4 ring-offset-surface scale-[1.02]' : '';
+                
+                const badgeText = nb.is_shared ? 'Shared' : 'Private';
+                const badgeStyle = nb.is_shared 
+                    ? 'bg-tertiary/20 text-tertiary' 
+                    : 'bg-outline-variant/10 text-on-surface-variant';
+                const ownerBadge = `<span class="text-[10px] px-2 py-1 rounded-full ${badgeStyle} uppercase tracking-tighter font-bold ml-2">${badgeText}</span>`;
+
+                return `
+                    <div class="notebook-card group relative bg-surface-container-low border ${t.border} rounded-2xl p-6 cursor-pointer transition-all duration-300 shadow-[0_8px_20px_rgba(0,0,0,0.1)] ${t.hover} hover:-translate-y-1 ${selectionClass}"
+                         onclick="openNotebook(${nb.id})">
+                        <div class="flex items-start justify-between mb-5 relative">
+                            <div class="w-12 h-12 rounded-xl ${t.bg} flex items-center justify-center ${t.text} group-hover:scale-110 transition-transform shadow-inner">
+                                <span class="material-symbols-outlined text-[24px]">menu_book</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                ${ownerBadge}
+                                <button onclick="deleteNotebook(event, ${nb.id}, ${nb.is_owner})" 
+                                        class="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-error/10 text-outline hover:text-error transition-all cursor-pointer" 
+                                        title="${nb.is_owner ? 'Delete Notebook' : 'Leave Notebook'}">
+                                    <span class="material-symbols-outlined text-[16px]">${nb.is_owner ? 'delete' : 'logout'}</span>
+                                </button>
+                            </div>
+                        </div>
+                        <h3 class="font-bold text-on-surface text-base leading-snug mb-2 line-clamp-2">${titleHtml}</h3>
+                        <p class="text-xs text-on-surface-variant mb-6">Last edited ${date}</p>
+                        <div class="flex items-center justify-between mt-auto">
+                            <div class="flex -space-x-2">
+                                <div class="w-7 h-7 rounded-full bg-primary/20 border-2 border-surface text-[10px] flex items-center justify-center text-primary font-bold shadow-sm" title="Created by ${nb.owner_name || 'User'}">
+                                    ${(nb.owner_name || 'U').charAt(0).toUpperCase()}
+                                </div>
+                                ${nb.is_shared ? `
+                                <div class="w-7 h-7 rounded-full bg-tertiary/20 border-2 border-surface text-[10px] flex items-center justify-center text-tertiary font-bold shadow-sm backdrop-blur-sm" title="Shared with collaborators">
+                                    <span class="material-symbols-outlined text-[12px]">group</span>
+                                </div>
+                                ` : ''}
+                            </div>
+                            <span class="material-symbols-outlined text-outline text-[20px] group-hover:${t.text} transition-colors group-hover:translate-x-1 duration-300">arrow_forward</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Initial fetch
+        fetchNotebooks();
+
+        function openNotebook(id) {
+            window.location.href = `notebook.html?id=${id}`;
+        }
+
+        async function deleteNotebook(event, id, isOwner) {
+            event.stopPropagation(); // Prevent opening the notebook
+
+            const action = isOwner ? 'delete this notebook completely' : 'leave this shared notebook';
+            if (!confirm(`Are you sure you want to ${action}?`)) return;
+
+            try {
+                const res = await fetch(`/api/notebooks/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!res.ok) throw new Error('Failed to perform action');
+                
+                // Refresh list
+                fetchNotebooks();
+            } catch (err) {
+                console.error(err);
+                alert('An error occurred while deleting the notebook.');
+            }
+        }
+
+        document.getElementById('btn-create-nb').addEventListener('click', async () => {
+            const title = inputNbTitle.value.trim();
+            const error = document.getElementById('nb-error');
+            const btn = document.getElementById('btn-create-nb');
+
+            if (!title) { 
+                error.textContent = "Please enter a title."; 
+                error.classList.remove('hidden'); 
+                return; 
+            }
+            
+            error.classList.add('hidden');
+            btn.disabled = true;
+            btn.innerHTML = `<span class="animate-spin material-symbols-outlined text-[20px]">sync</span>`;
+
+            try {
+                const response = await fetch('/api/notebooks', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ title })
+                });
+
+                if (!response.ok) throw new Error('Could not create notebook');
+
+                inputNbTitle.value = '';
+                createDropdown.classList.add('hidden');
+                createDropdown.classList.remove('flex');
+                
+                // Refresh and redirect
+                await fetchNotebooks();
+                openNotebook(title);
+            } catch (err) {
+                error.textContent = err.message;
+                error.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<span class="material-symbols-outlined text-[20px]">add</span> Create Notebook`;
+            }
+        });
+        // ── Profile Dropdown ──
+        const btnProfile = document.getElementById('btn-profile');
+        const profileDropdown = document.getElementById('profile-dropdown');
+        if (btnProfile && profileDropdown) {
+            btnProfile.addEventListener('click', (e) => {
+                e.stopPropagation();
+                profileDropdown.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (e) => {
+                if (!profileDropdown.contains(e.target)) {
+                    profileDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // ── Logout Logic ──
+        document.getElementById('btn-logout').addEventListener('click', () => {
+            localStorage.removeItem('colearn_token');
+            window.location.href = 'login.html';
+        });
+
+        // ── Delete Account Logic ──
+        const deleteModal = document.getElementById('delete-modal');
+        const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+
+        function openDeleteModal() {
+            deleteModal.classList.remove('hidden');
+            deleteModal.classList.add('flex');
+        }
+
+        function closeDeleteModal() {
+            deleteModal.classList.add('hidden');
+            deleteModal.classList.remove('flex');
+        }
+
+        btnConfirmDelete.addEventListener('click', async () => {
+            btnConfirmDelete.disabled = true;
+            btnConfirmDelete.innerHTML = `<span class="animate-spin material-symbols-outlined text-[20px]">sync</span>`;
+
+            try {
+                const response = await fetch('/api/user/profile', {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Could not delete account');
+
+                localStorage.removeItem('colearn_token');
+                window.location.href = 'index.html';
+            } catch (err) {
+                console.error(err);
+                alert('An error occurred. Please try again.');
+                btnConfirmDelete.disabled = false;
+                btnConfirmDelete.innerHTML = `Yes, Delete Everything`;
+            }
+        });
+
+        // ── Avatar Logic ──
+        const avatarModal = document.getElementById('avatar-modal');
+        const avatarGrid = document.getElementById('avatar-grid');
+        const btnSaveAvatar = document.getElementById('btn-save-avatar');
+        let selectedAvatar = '';
+
+        const avatars = [
+            'https://api.dicebear.com/7.x/shapes/svg?seed=default',
+            'https://api.dicebear.com/7.x/shapes/svg?seed=Felix',
+            'https://api.dicebear.com/7.x/shapes/svg?seed=Milo',
+            'https://api.dicebear.com/7.x/shapes/svg?seed=Lucky',
+            'https://api.dicebear.com/7.x/shapes/svg?seed=Charlie',
+            'https://api.dicebear.com/7.x/shapes/svg?seed=Luna',
+            'https://api.dicebear.com/7.x/shapes/svg?seed=Bella',
+            'https://api.dicebear.com/7.x/shapes/svg?seed=Coco',
+            'https://api.dicebear.com/7.x/shapes/svg?seed=Buddy'
+        ];
+
+        function openAvatarModal() {
+            avatarModal.classList.remove('hidden');
+            avatarModal.classList.add('flex');
+            renderAvatarOptions();
+        }
+
+        function closeAvatarModal() {
+            avatarModal.classList.add('hidden');
+            avatarModal.classList.remove('flex');
+        }
+
+        function renderAvatarOptions() {
+            avatarGrid.innerHTML = avatars.map(url => `
+                <div onclick="selectAvatar('${url}')" class="avatar-option group relative aspect-square rounded-2xl overflow-hidden border-2 cursor-pointer transition-all duration-300 ${url === selectedAvatar ? 'border-primary ring-4 ring-primary/20' : 'border-outline-variant/20 hover:border-primary/50'}">
+                    <img src="${url}" class="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                    ${url === selectedAvatar ? '<div class="absolute inset-x-0 bottom-0 top-0 bg-primary/10 flex items-center justify-center"><span class="material-symbols-outlined text-primary text-[32px] font-bold">check_circle</span></div>' : ''}
+                </div>
+            `).join('');
+        }
+
+        function selectAvatar(url) {
+            selectedAvatar = url;
+            btnSaveAvatar.disabled = false;
+            renderAvatarOptions();
+        }
+
+        btnSaveAvatar.addEventListener('click', async () => {
+            if (!selectedAvatar) return;
+            btnSaveAvatar.disabled = true;
+            btnSaveAvatar.innerHTML = `<span class="animate-spin material-symbols-outlined text-[18px]">sync</span>`;
+            
+            try {
+                const response = await fetch('/api/user/profile', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ avatar_url: selectedAvatar })
+                });
+
+                if (!response.ok) throw new Error('Failed to update avatar');
+
+                // Update all profile images on page
+                updateProfileImages(selectedAvatar);
+                closeAvatarModal();
+            } catch (err) {
+                console.error(err);
+                alert('Failed to update icon. Please try again.');
+            } finally {
+                btnSaveAvatar.disabled = false;
+                btnSaveAvatar.innerHTML = `Save Changes`;
+            }
+        });
+
+        function updateProfileImages(url) {
+            document.querySelectorAll('#btn-profile img, .user-avatar').forEach(img => {
+                img.src = url;
+            });
+        }
+
+        async function fetchUserProfile() {
+            try {
+                const response = await fetch('/api/user/profile', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Failed to fetch profile');
+                const user = await response.json();
+                
+                // Update username in header
+                const nameEl = document.getElementById('user-name');
+                if (nameEl && user.name) nameEl.textContent = user.name;
+
+                if (user.avatar_url) {
+                    selectedAvatar = user.avatar_url;
+                    updateProfileImages(user.avatar_url);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        fetchUserProfile();
+
+        // ── Notification Logic ──
+        const btnNotifications = document.getElementById('btn-notifications');
+        const notificationsDropdown = document.getElementById('notifications-dropdown');
+        const notificationsList = document.getElementById('notifications-list');
+        const notificationBadge = document.getElementById('notification-badge');
+        const unreadCountBadge = document.getElementById('unread-count');
+
+        if (btnNotifications && notificationsDropdown) {
+            btnNotifications.addEventListener('click', (e) => {
+                e.stopPropagation();
+                notificationsDropdown.classList.toggle('hidden');
+                if (!notificationsDropdown.classList.contains('hidden')) {
+                    fetchNotifications();
+                }
+            });
+            document.addEventListener('click', (e) => {
+                if (!notificationsDropdown.contains(e.target)) {
+                    notificationsDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        async function fetchNotifications() {
+            try {
+                const response = await fetch('/api/notifications', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Failed to fetch notifications');
+                const notifications = await response.json();
+                renderNotifications(notifications);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function renderNotifications(notifications) {
+            const unreadCount = notifications.filter(n => !n.is_read).length;
+            
+            if (unreadCount > 0) {
+                notificationBadge.classList.remove('hidden');
+                unreadCountBadge.textContent = `${unreadCount} New`;
+                unreadCountBadge.classList.remove('hidden');
+            } else {
+                notificationBadge.classList.add('hidden');
+                unreadCountBadge.classList.add('hidden');
+            }
+
+            if (notifications.length === 0) {
+                notificationsList.innerHTML = `
+                    <div class="py-10 text-center text-on-surface-variant">
+                        <span class="material-symbols-outlined text-[32px] mb-2 opacity-20">notifications_off</span>
+                        <p class="text-xs font-medium">All caught up!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            notificationsList.innerHTML = notifications.map(n => {
+                const iconMap = { collab: 'group_add', message: 'chat_bubble', info: 'info' };
+                const colorMap = { collab: 'text-tertiary bg-tertiary/10', message: 'text-primary bg-primary/10', info: 'text-secondary bg-secondary/10' };
+                const icon = iconMap[n.type] || 'notifications';
+                const colors = colorMap[n.type] || 'text-outline bg-outline/10';
+                const date = new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                return `
+                    <a href="${n.link || '#'}" class="flex items-start gap-4 px-4 py-3 hover:bg-surface-container-highest transition-colors ${!n.is_read ? 'bg-primary/5' : ''}">
+                        <div class="w-10 h-10 rounded-full ${colors} flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-[20px]">${icon}</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-sm font-bold text-on-surface truncate">${n.title}</h4>
+                            <p class="text-xs text-on-surface-variant line-clamp-2 mt-0.5">${n.content}</p>
+                            <span class="text-[10px] text-outline mt-2 block uppercase font-bold tracking-tighter">${date}</span>
+                        </div>
+                        ${!n.is_read ? '<div class="w-2 h-2 bg-primary rounded-full mt-1.5 shrink-0"></div>' : ''}
+                    </a>
+                `;
+            }).join('');
+        }
+
+        async function markAllNotificationsRead() {
+            try {
+                await fetch('/api/notifications/read-all', {
+                    method: 'PATCH',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                fetchNotifications();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        setInterval(fetchNotifications, 30000);
+        fetchNotifications();
+    </script>
+</body>
+</html>

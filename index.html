@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta name="description" content="Create your CoLearn AI account and join the collaborative intelligence network."/>
+    <title>CoLearn AI - Create Account</title>
+
+    <!-- Fonts and Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <!-- Shared Styles -->
+    <link rel="stylesheet" href="styles.css"/>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="tailwind.config.js"></script>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col selection:bg-primary selection:text-on-primary">
+
+    <!-- Top Navigation -->
+    <header class="w-full px-6 py-8 max-w-7xl mx-auto flex justify-between items-center">
+        <a href="index.html" class="flex items-center gap-3 group">
+            <div class="h-9 w-9 bg-white rounded-xl shadow-[0_4px_20px_rgba(255,255,255,0.1)] flex items-center justify-center p-1 overflow-hidden transition-transform group-hover:scale-105 duration-300">
+                <img src="logo.jpeg" alt="CoLearn AI Logo" class="w-full h-full object-contain"/>
+            </div>
+            <span class="text-xl font-bold tracking-tighter text-primary">CoLearn AI</span>
+        </a>
+        <div class="flex items-center gap-4 text-on-surface-variant">
+            <a href="login.html" aria-label="Already have an account? Log in" class="flex items-center gap-2 text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors">
+                <span class="material-symbols-outlined text-[20px]">login</span>
+                <span class="hidden sm:inline">Log in</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex items-center justify-center px-4 py-12">
+        <div class="w-full max-w-[440px] space-y-12">
+
+            <!-- Header Section -->
+            <div class="text-center space-y-3">
+                <h1 class="text-4xl font-extrabold tracking-tight text-on-surface">Start your journey.</h1>
+                <p class="text-on-surface-variant text-lg font-light">Access the collaborative intelligence network.</p>
+            </div>
+
+            <!-- Form Card -->
+            <div class="glass-panel p-10 rounded-xl space-y-8 shadow-[0px_20px_40px_rgba(0,0,0,0.4)] bg-surface-container-low">
+                <form id="register-form" class="space-y-6" novalidate>
+
+                    <!-- Username Field -->
+                    <div class="space-y-2">
+                        <label for="reg-username" class="block text-[10px] uppercase tracking-widest text-outline font-bold px-1">Username</label>
+                        <div class="relative group">
+                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors select-none pointer-events-none">person</span>
+                            <input
+                                id="reg-username"
+                                name="username"
+                                type="text"
+                                autocomplete="username"
+                                required
+                                placeholder="scholarly_curator"
+                                class="w-full bg-surface-container-lowest border-none rounded-lg py-4 pl-12 pr-5 text-on-surface placeholder:text-outline/40 focus:ring-1 focus:ring-primary transition-all duration-300"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Email Field -->
+                    <div class="space-y-2">
+                        <label for="reg-email" class="block text-[10px] uppercase tracking-widest text-outline font-bold px-1">Email ID</label>
+                        <div class="relative group">
+                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors select-none pointer-events-none">mail</span>
+                            <input
+                                id="reg-email"
+                                name="email"
+                                type="email"
+                                autocomplete="email"
+                                required
+                                placeholder="curator@colearn.ai"
+                                class="w-full bg-surface-container-lowest border-none rounded-lg py-4 pl-12 pr-5 text-on-surface placeholder:text-outline/40 focus:ring-1 focus:ring-primary transition-all duration-300"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="space-y-2">
+                        <label for="reg-password" class="block text-[10px] uppercase tracking-widest text-outline font-bold px-1">Password</label>
+                        <div class="relative group">
+                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors select-none pointer-events-none">lock</span>
+                            <input
+                                id="reg-password"
+                                name="password"
+                                type="password"
+                                autocomplete="new-password"
+                                required
+                                minlength="8"
+                                placeholder="••••••••"
+                                class="w-full bg-surface-container-lowest border-none rounded-lg py-4 pl-12 pr-12 text-on-surface placeholder:text-outline/40 focus:ring-1 focus:ring-primary transition-all duration-300"
+                            />
+                            <button
+                                id="toggle-reg-password"
+                                type="button"
+                                aria-label="Toggle password visibility"
+                                class="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors"
+                            >
+                                <span id="reg-toggle-icon" class="material-symbols-outlined">visibility</span>
+                            </button>
+                        </div>
+                        <!-- Strength bar -->
+                        <div id="strength-bar-wrap" class="hidden pt-1 space-y-1">
+                            <div class="flex gap-1">
+                                <div id="sb1" class="h-1 flex-1 rounded-full bg-outline-variant transition-colors duration-300"></div>
+                                <div id="sb2" class="h-1 flex-1 rounded-full bg-outline-variant transition-colors duration-300"></div>
+                                <div id="sb3" class="h-1 flex-1 rounded-full bg-outline-variant transition-colors duration-300"></div>
+                                <div id="sb4" class="h-1 flex-1 rounded-full bg-outline-variant transition-colors duration-300"></div>
+                            </div>
+                            <p id="strength-label" class="text-[10px] text-outline font-medium pl-1"></p>
+                        </div>
+                    </div>
+
+                    <!-- Error / Success message -->
+                    <p id="reg-error" class="hidden text-sm text-error font-medium text-center rounded-lg bg-error-container/20 py-2 px-4"></p>
+
+                    <!-- Submit Button -->
+                    <div class="pt-4">
+                        <button
+                            id="register-btn"
+                            type="submit"
+                            class="w-full py-4 bg-gradient-to-br from-primary to-primary-container text-on-primary-container font-bold rounded-lg hover:opacity-90 active:scale-[0.98] transition-all shadow-lg shadow-primary/10"
+                        >
+                            Create Account
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Footer Link -->
+                <div class="text-center">
+                    <p class="text-on-surface-variant text-sm">
+                        Already have an account?
+                        <a href="login.html" class="text-primary font-semibold hover:underline decoration-primary/30 underline-offset-4 transition-all ml-1">Log in</a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Decorative Element -->
+            <div class="flex justify-center items-center gap-6 opacity-20">
+                <div class="h-[1px] w-12 bg-outline-variant"></div>
+                <span class="material-symbols-outlined text-[18px]">auto_stories</span>
+                <div class="h-[1px] w-12 bg-outline-variant"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Background Glow -->
+    <div class="fixed top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full -z-10 pointer-events-none"></div>
+    <div class="fixed bottom-[-5%] left-[-5%] w-[400px] h-[400px] bg-tertiary/5 blur-[100px] rounded-full -z-10 pointer-events-none"></div>
+
+    <!-- Footer -->
+    <footer class="w-full px-6 py-8 max-w-7xl mx-auto flex justify-center">
+        <p class="text-[10px] uppercase tracking-[0.2em] text-outline/50 font-medium">© 2024 CoLearn AI • Knowledge Architecture</p>
+    </footer>
+
+    <script>
+        // --- Password Visibility Toggle ---
+        const toggleBtn = document.getElementById('toggle-reg-password');
+        const passwordInput = document.getElementById('reg-password');
+        const toggleIcon = document.getElementById('reg-toggle-icon');
+
+        toggleBtn.addEventListener('click', () => {
+            const isHidden = passwordInput.type === 'password';
+            passwordInput.type = isHidden ? 'text' : 'password';
+            toggleIcon.textContent = isHidden ? 'visibility_off' : 'visibility';
+        });
+
+        // --- Password Strength Indicator ---
+        const strengthWrap = document.getElementById('strength-bar-wrap');
+        const strengthLabel = document.getElementById('strength-label');
+        const bars = [
+            document.getElementById('sb1'),
+            document.getElementById('sb2'),
+            document.getElementById('sb3'),
+            document.getElementById('sb4'),
+        ];
+        const strengthColors = ['#ff4d4d', '#ffb786', '#adc6ff', '#4caf50'];
+        const strengthLabels = ['Weak', 'Fair', 'Good', 'Strong'];
+
+        function getStrength(pw) {
+            let score = 0;
+            if (pw.length >= 8) score++;
+            if (/[A-Z]/.test(pw)) score++;
+            if (/[0-9]/.test(pw)) score++;
+            if (/[^A-Za-z0-9]/.test(pw)) score++;
+            return score;
+        }
+
+        passwordInput.addEventListener('input', () => {
+            const val = passwordInput.value;
+            if (!val) { strengthWrap.classList.add('hidden'); return; }
+            strengthWrap.classList.remove('hidden');
+            const score = getStrength(val); // 1–4
+            bars.forEach((bar, i) => {
+                bar.style.backgroundColor = i < score ? strengthColors[score - 1] : '';
+                bar.style.backgroundColor = i < score ? strengthColors[score - 1] : '#424754';
+            });
+            strengthLabel.textContent = strengthLabels[score - 1] || '';
+        });
+
+        // --- Form Validation ---
+        const form = document.getElementById('register-form');
+        const errorEl = document.getElementById('reg-error');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('reg-username').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value;
+
+            if (!username || !email || !password) {
+                errorEl.textContent = 'All fields are required.';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+            if (password.length < 8) {
+                errorEl.textContent = 'Password must be at least 8 characters.';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            // Placeholder success
+            errorEl.classList.add('hidden');
+            const btn = document.getElementById('register-btn');
+            btn.textContent = 'Creating account…';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                btn.textContent = '✓ Account Created!';
+                btn.classList.add('opacity-70');
+                setTimeout(() => { window.location.href = 'login.html'; }, 1000);
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
